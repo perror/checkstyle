@@ -1,0 +1,11 @@
+			    Checkstyle
+			   ============
+
+Checkstyle is a framework to automatically evaluate student's
+enforcement of coding style for several programming languages.
+
+Features TODO-list
+==================
+- Parse C programming language and check for a few rules.
+
+
