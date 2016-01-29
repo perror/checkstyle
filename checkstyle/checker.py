@@ -18,6 +18,10 @@ class Checker(object):
         """
         self.rules.add(rule)
 
+    def add_filter(self, filter):
+        """Add a filter on file input"""
+        pass
+
     def run(self):
         """Run all the rules over the files"""
         import fileinput
