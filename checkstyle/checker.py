@@ -40,6 +40,6 @@ class CChecker(Checker):
 
         ### Registering rules ###
 
-        # 80 columns rule
+        # 80 columns' rule
         from checkstyle.rules import LineWidthRule
-        self.register(LineWidthRule(75))
+        self.register(LineWidthRule(80))
