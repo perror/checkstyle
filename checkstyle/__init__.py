@@ -11,4 +11,6 @@ from checkstyle.rules import Rule
 from checkstyle.runner import Runner
 
 __version__ = '0.0.1'
+__author__ = ("Emmanuel Fleury <emmanuel.fleury@u-bordeaux.fr>")
+
 __all__ = ['Checker', 'Rule', 'Runner']

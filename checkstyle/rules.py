@@ -16,12 +16,12 @@ class Rule(object):
         """Returns the full description of the rule"""
         pass
 
-    def check(self, files, lexer):
+    def check(self, files, lexer, line_filter=None):
         """Check the files against the rule and output errors on stdout
 
         @param files: list of all the files of the same kind
         @param lexer: the tokenizer for the files
-
+        @param filter: filter function to apply before tokenizer
         """
         pass
 
@@ -38,8 +38,10 @@ class LineWidthRule(Rule):
     def description(self):
         return "Check if each line of code is below " + str(self.width) + " characters."
 
-    def check(self, files, lexer):
+    def check(self, files, lexer, line_filter=None):
         for line in files:
+            if line_filter is not None:
+                line = line_filter(line)
             for column, _, value in lexer.get_tokens_unprocessed(line):
                 if value == '\n' and column > self.width:
                     from checkstyle.utils import error

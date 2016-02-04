@@ -6,9 +6,12 @@ class Checker(object):
     """Abstract class to build a checker"""
 
     def __init__(self, files):
-        self.lexer = None
+        from pygments.lexer import Lexer
+
+        self.lexer = Lexer
         self.files = files
         self.rules = set()
+        self.line_filter = None
 
     def register(self, rule):
         """Add a rule to the rule list
@@ -18,20 +21,23 @@ class Checker(object):
         """
         self.rules.add(rule)
 
-    def add_filter(self, filter):
-        """Add a filter on file input"""
-        pass
-
     def run(self):
         """Run all the rules over the files"""
         import fileinput
 
         if self.lexer in self.files:
             files = fileinput.input(files=self.files[self.lexer])
-
             for rule in self.rules:
-                #pylint: disable=not-callable
-                rule.check(files, self.lexer())
+                if self.line_filter is None:
+                    #pylint: disable=not-callable
+                    rule.check(files, self.lexer())
+                else:
+                    #pylint: disable=not-callable
+                    rule.check(files, self.lexer(), line_filter=self.line_filter)
+
+def tab_filter(line):
+    """Internal filter to change tabulation into 8 whitespaces"""
+    return line.replace('\t', ' ' * 8)
 
 class CChecker(Checker):
     """C checker class"""
@@ -41,9 +47,9 @@ class CChecker(Checker):
 
         super().__init__(files)
         self.lexer = CLexer
+        self.line_filter = tab_filter
 
         ### Registering rules ###
-
         # 80 columns' rule
         from checkstyle.rules import LineWidthRule
         self.register(LineWidthRule(80))
