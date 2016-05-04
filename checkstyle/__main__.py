@@ -1,12 +1,11 @@
 # -*- coding: utf-8
 
-"""Main program when called as a command line software"""
+"""Main program when called as a command line software."""
 
 import sys
 
 def main(args):
-    """Main function of the checkstyle module"""
-
+    """Main function of the checkstyle module."""
     # Parsing the arguments of the command line interface
     import argparse
     import os

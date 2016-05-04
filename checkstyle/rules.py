@@ -1,23 +1,23 @@
 # -*- coding: utf-8
 
-"""Describes the coding style rules and how to check it"""
+"""Describes the coding style rules and how to check it."""
 
 class Rule(object):
-    """Abstract class to check a precise coding style rule"""
+    """Abstract class to check a precise coding style rule."""
 
     def __init__(self):
         pass
 
     def name(self):
-        """Return the name of the rule"""
+        """Return the name of the rule."""
         pass
 
     def description(self):
-        """Returns the full description of the rule"""
+        """Return the full description of the rule."""
         pass
 
     def check(self, files, lexer, line_filter=None):
-        """Check the files against the rule and output errors on stdout
+        """Check the files against the rule and output errors on stdout.
 
         @param files: list of all the files of the same kind
         @param lexer: the tokenizer for the files
@@ -26,7 +26,7 @@ class Rule(object):
         pass
 
 class LineWidthRule(Rule):
-    """Check each line width to be within correct boundaries"""
+    """Check each line width to be within correct boundaries."""
 
     def __init__(self, width=80):
         super().__init__()

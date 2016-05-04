@@ -1,6 +1,6 @@
 # -*- coding: utf-8
 
-"""Check coding style enforcement in students' code
+"""Check coding style enforcement in students' code.
 
 A collection of functions and classes designed to check automatically
 that the coding style is observed in a student programming project.

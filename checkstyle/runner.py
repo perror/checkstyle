@@ -1,9 +1,9 @@
 # -*- coding: utf-8
 
-"""Discover the projects files and run the registered checkers on it"""
+"""Discover the projects files and run the registered checkers on it."""
 
 class Runner(object):
-    """Class to run the checkers on the project files"""
+    """Class to run the checkers on the project files."""
 
     def __init__(self, path):
         self.files = dict()
@@ -11,7 +11,7 @@ class Runner(object):
         self.discover(path)
 
     def discover(self, path):
-        """Discover all files of the project and group them by categories
+        """Discover all files of the project and group them by categories.
 
         @param path: Path to the project or to the file to check.
 
@@ -38,7 +38,7 @@ class Runner(object):
                 pass
 
     def register(self, checker):
-        """Add a checker to the runner list
+        """Add a checker to the runner list.
 
         @param checker: Checker to add to the runner.
 
@@ -49,7 +49,7 @@ class Runner(object):
             self.checkers.append(checker(self.files))
 
     def run(self):
-        """Start all the checkers on the files of the project"""
+        """Start all the checkers on the files of the project."""
         from checkstyle.checker import Checker
 
         for checker in self.checkers:
