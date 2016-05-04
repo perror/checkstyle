@@ -5,6 +5,7 @@ class IterStream(TextIOWrapper):
     File-like streaming iterator.
     """
     def __init__(self, generator):
+        self._buffer = ''
         self.generator = generator
         self.iterator = iter(generator)
         self.leftover = ''
@@ -16,31 +17,47 @@ class IterStream(TextIOWrapper):
         return self.iterator.next()
 
     def __next__(self):
-        return self.iterator.__next__()
+        if self._buffer:
+            next = self._buffer[0]
+            self._buffer = self._buffer[1:]
+        else:
+            next = self.iterator.__next__()
 
-    def read(self, size):
-        data = self.leftover
-        count = len(self.leftover)
-        try:
-            while count < size:
-                chunk = self.__next__()
-                data += chunk
-                count += len(chunk)
-        except StopIteration:
-            self.leftover = ''
-            return data
+        return next
 
-        return data[:size]
+    def readline(self):
+        line = ''
+        while True:
+            # Initializing the line and previous_line
+            previous_size = len(line)
+            line += self.__next__()
 
-    def readline(self, size):
-        line = self.read(size)
+            # Check EOF
+            if len(line) == previous_size:
+                break
+
+            # Check for EOL
+            # We are looking for '\n', '\r' or '\r\n' new line characters.
+            nlpos = line.find('\n')
+            crpos = line.find('\r')
+
+            if nlpos != -1:
+                break
+            elif crpos < len(line):
+                if nlpos == crpos + 1:
+                    break
+                else:
+                    self._buffer += line[crpos+1:]
+                    line = line[:crpos]
+                    break
         return line
 
-    def readlines(self, size):
-        return self.readline(size)
+    def readlines(self):
+        return self.readline()
 
     def close(self):
         pass
+
 
 def streamfilter(filter):
     def stream(iostream):
@@ -52,21 +69,13 @@ def tab_filter(stream):
     for line in stream:
         yield line.replace ('\t', ' ' * 8)
 
-
 def fileinput_hook(filename, mode):
-    return tab_filter(open(filename, mode))        
+    return tab_filter(open(filename, mode))
 
 if __name__ == "__main__":
     import fileinput
     import sys
 
     with fileinput.input(files='Makefile', openhook=fileinput_hook) as f:
-        for line in f:            
-            line = ''
-            for letter in f:
-                if letter == '\n':
-                    line += '\n'
-                    break
-                line += letter
-            
+        for line in f:
             sys.stdout.write(f.filename() + ": " + str(f.filelineno()) + ": " + line)
