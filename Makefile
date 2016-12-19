@@ -2,13 +2,14 @@
 all:
 
 doc:
+	@if [ ! -d "doc/html" ]; then mkdir -p doc/html; fi
 	epydoc -v --output doc/html --html checkstyle/
 
 check:
 	@(cd test && ./check.sh)
 
 clean:
-	@rm -rf ./doc/html
+	@rm -rf ./doc/
 
 distclean: clean
 	@find . -name '*.pyc' -exec rm -f {} +
