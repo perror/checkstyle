@@ -11,17 +11,11 @@ class IterStream(TextIOWrapper):
         self._buffer = ''
         self.generator = generator
         self.iterator = iter(generator)
-
-        # Select Python2 or Python3 next() method
-        if int(sys.version[0]) >= 3:
-            self._next = self.iterator.__next__
-        else:
-            self._next = self.iterator.next
+        self._next = self.iterator.__next__
 
     def __iter__(self):
         return self.iterator
 
-    # Python3 version
     def __next__(self):
         if self._buffer:
             _next_char = self._buffer[0]
@@ -29,10 +23,6 @@ class IterStream(TextIOWrapper):
         else:
             _next_char = self.iterator.__next__()
         return _next_char
-
-    # Python2 version
-    def next(self):
-        return self.__next__()
 
     def read(self, size=None):
         if size is None:
@@ -101,6 +91,8 @@ def fileinput_hook(filename, mode):
     return tab_filter(open(filename, mode))
 
 if __name__ == "__main__":
-    with fileinput.input(files='Makefile', openhook=fileinput_hook) as f:
-        for line in f:
-            sys.stdout.write(f.filename() + ": " + str(f.filelineno()) + ": " + line)
+    with fileinput.input(files=('Makefile', 'README', 'requirements.txt'), openhook=fileinput_hook) as f:
+        while not f.isfirstline():
+            for line in f:
+                sys.stdout.write(f.filename() + ": " + str(f.filelineno()) + ": " + line)
+            f.nextfile()
