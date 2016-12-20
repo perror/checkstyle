@@ -8,3 +8,10 @@ def error(msg, files):
     prefix = "checkstyle: error: "
     text = prefix + "%s: %i: %s\n" % (files.filename(), files.filelineno(), msg)
     sys.stderr.write(text)
+
+def warning(msg, files):
+    """Handling warning messages for each broken rule."""
+    import sys
+    prefix = "checkstyle: warning: "
+    text = prefix + "%s: %i: %s\n" % (files.filename(), files.filelineno(), msg)
+    sys.stderr.write(text)

@@ -39,10 +39,11 @@ class LineWidthRule(Rule):
         return "Check if each line of code is below " + str(self.width) + " characters."
 
     def check(self, files, lexer, line_filter=None):
+        """Check line width."""
         for line in files:
             if line_filter is not None:
                 line = line_filter(line)
             for column, _, value in lexer.get_tokens_unprocessed(line):
                 if value == '\n' and column > self.width:
                     from checkstyle.utils import error
-                    error("line too long", files)
+                    error("line too long (>%i columns)" % self.width, files)

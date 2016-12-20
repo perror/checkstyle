@@ -11,7 +11,6 @@ class Checker(object):
         self.lexer = Lexer
         self.files = files
         self.rules = set()
-        self.line_filter = None
 
     def register(self, rule):
         """Add a rule to the rule list.
@@ -35,7 +34,7 @@ class Checker(object):
                     #pylint: disable=not-callable
                     rule.check(files, self.lexer(), line_filter=self.line_filter)
 
-def tab_filter(line):
+def C_filter(line):
     """Internal filter to change tabulation into 8 whitespaces."""
     return line.replace('\t', ' ' * 8)
 
@@ -47,9 +46,9 @@ class CChecker(Checker):
 
         super().__init__(files)
         self.lexer = CLexer
-        self.line_filter = tab_filter
+        self.line_filter = C_filter
 
         ### Registering rules ###
-        # 80 columns' rule
         from checkstyle.rules import LineWidthRule
+        # 80 columns' rule
         self.register(LineWidthRule(80))
