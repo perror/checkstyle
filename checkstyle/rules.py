@@ -65,27 +65,36 @@ class SpacesAroundOps(Rule):
         for line in files:
             if line_filter is not None:
                 line = line_filter(line)
+            ignore_next = 0
             for pos, token_type, value in lexer.get_tokens_unprocessed(line):
+                if ignore_next > 0:
+                    ignore_next -= 1
+                    continue
+
                 if token_type is Token.Operator:
-                    # Filtering out special operators
-                    if value in frozenset([':', '!']):
-                        break
-                    # Filtering special cases '++' and '--'
-                    if value in frozenset(['+', '-']):
-                        # Check left character
-                        if (pos > 0) and (line[pos - 1] == value):
-                            if (pos < len(line) - 1):
-                                break
-                                
+                    # Filtering special cases '++', '--', '==', '&&', '||'
+                    if value in frozenset(['+', '-', '=', '&', '|']):
                         # Check right character
-                        if (pos < len(line) - 1) and ((line[pos + 1] == value) or line[pos + 1] == '='):
-                            break
+                        if (pos < len(line) - 1) and (line[pos + 1] == value):
+                            ignore_next = 1
+                            continue
 
                     # Filtering special cases '+=', '-=', '*=', ...
-                    if value in frozenset(['+', '-', '*', '/', '^', '|', '&']):
+                    if value in frozenset(['+', '-', '*', '/', '^', '|', '&', '!']):
                         # Check if right char is '='
                         if (pos < len(line) - 1) and (line[pos + 1] == '='):
-                            pass
+                            ignore_next = 1
+                            continue
+
+                    # Filtering out special operators
+                    if value in frozenset([':', '!']):
+                        continue
+
+                    # Filtering special cases '&<name>'
+                    if value == '&':
+                        if (pos < len(line) - 1) and line[pos + 1].isalpha():
+                            ignore_next = 1
+                            continue
 
                     # Checking whitespaces around
                     result = True
