@@ -25,14 +25,10 @@ class Checker(object):
         import fileinput
 
         if self.lexer in self.files:
-            files = fileinput.input(files=self.files[self.lexer])
             for rule in self.rules:
-                if self.line_filter is None:
-                    #pylint: disable=not-callable
-                    rule.check(files, self.lexer())
-                else:
-                    #pylint: disable=not-callable
-                    rule.check(files, self.lexer(), line_filter=self.line_filter)
+                files = fileinput.input(files=self.files[self.lexer])
+                #pylint: disable=not-callable
+                rule.check(files, self.lexer(), line_filter=self.line_filter)
 
 def C_filter(line):
     """Internal filter to change tabulation into 8 whitespaces."""
@@ -49,6 +45,8 @@ class CChecker(Checker):
         self.line_filter = C_filter
 
         ### Registering rules ###
-        from checkstyle.rules import LineWidthRule
+        from checkstyle.rules import LineWidthRule, SpacesAroundOps
         # 80 columns' rule
         self.register(LineWidthRule(80))
+        # Spaces around Operators
+        self.register(SpacesAroundOps())

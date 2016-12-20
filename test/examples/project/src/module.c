@@ -28,9 +28,10 @@ print_message ()
   char *line = NULL;
   size_t line_size = 0;
 
-  /* Get the number of time to print the line */
+  /* Errors lines too long */
   /* AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
   /* 										 */
+  /* Get the number of time to print the line */
   fputs ("Give the number of times you want to write the line: ", stdout);
   if (!getline (&line, &line_size, stdin))
     {

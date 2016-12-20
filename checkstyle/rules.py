@@ -2,6 +2,10 @@
 
 """Describes the coding style rules and how to check it."""
 
+from checkstyle.utils import error
+
+from pygments.token import *
+
 class Rule(object):
     """Abstract class to check a precise coding style rule."""
 
@@ -36,7 +40,7 @@ class LineWidthRule(Rule):
         return "Maximum Line Width Rule"
 
     def description(self):
-        return "Check if each line of code is below " + str(self.width) + " characters."
+        return "Check if each line of code is below %i characters." % self.width
 
     def check(self, files, lexer, line_filter=None):
         """Check line width."""
@@ -45,5 +49,54 @@ class LineWidthRule(Rule):
                 line = line_filter(line)
             for column, _, value in lexer.get_tokens_unprocessed(line):
                 if value == '\n' and column > self.width:
-                    from checkstyle.utils import error
                     error("line too long (>%i columns)" % self.width, files)
+
+class SpacesAroundOps(Rule):
+    """Check if some operators are between spaces."""
+
+    def name(self):
+        return "Spaces Around Operators Rule"
+
+    def description(self):
+        return "Check if there are spaces around some operators."
+
+    def check(self, files, lexer, line_filter=None):
+        """Check if there are spaces around operators."""
+        for line in files:
+            if line_filter is not None:
+                line = line_filter(line)
+            for pos, token_type, value in lexer.get_tokens_unprocessed(line):
+                if token_type is Token.Operator:
+                    # Filtering out special operators
+                    if value in frozenset([':', '!']):
+                        break
+                    # Filtering special cases '++' and '--'
+                    if value in frozenset(['+', '-']):
+                        # Check left character
+                        if (pos > 0) and (line[pos - 1] == value):
+                            if (pos < len(line) - 1):
+                                break
+                                
+                        # Check right character
+                        if (pos < len(line) - 1) and ((line[pos + 1] == value) or line[pos + 1] == '='):
+                            break
+
+                    # Filtering special cases '+=', '-=', '*=', ...
+                    if value in frozenset(['+', '-', '*', '/', '^', '|', '&']):
+                        # Check if right char is '='
+                        if (pos < len(line) - 1) and (line[pos + 1] == '='):
+                            pass
+
+                    # Checking whitespaces around
+                    result = True
+                    # Check if left char is a space
+                    if (pos > 0):
+                        if not (line[pos - 1].isspace()):
+                            result = False
+                    # Check if right char is space
+                    if (pos < len(line) - 1):
+                        if not (line[pos - 1].isspace()):
+                            result = False
+                    if not result:
+                        error("Missing spaces around '%s'" % value, files)
+        

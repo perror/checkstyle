@@ -65,7 +65,7 @@ option_parser (int argc, char *argv[])
     switch (optc)
       {
       case 'i':		/* Enter interactive mode */
-	interactive = true;
+	interactive=true; /* ERROR: Missing spaces around '=' */
 	break;
 
       case 'v':		/* Display version number and exit */
